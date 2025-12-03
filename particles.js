@@ -77,11 +77,11 @@ export class ParticleSystem {
         this.scene.add(this.mesh);
 
         this.emotionColorMap = {
-            'happy': [new THREE.Color(1.0, 0.9, 0.1), new THREE.Color(1.0, 0.4, 0.1), new THREE.Color(1.0, 0.2, 0.6)], // Sunny Yellow + Orange + Hot Pink
-            'surprise': [new THREE.Color(0.2, 1.0, 0.0), new THREE.Color(1.0, 0.0, 1.0)], // Lime Green + Magenta
+            'happy': [], // Will be handled specially to restore original colors
+            'surprise': [new THREE.Color(1.0, 0.9, 0.1), new THREE.Color(1.0, 0.4, 0.1), new THREE.Color(1.0, 0.2, 0.6)], // Old Happy colors (Sunny Yellow + Orange + Hot Pink)
             'angry': [new THREE.Color(1.0, 0.0, 0.0), new THREE.Color(1.0, 0.5, 0.0)], // Red + Orange
             'sad': [new THREE.Color(0.1, 0.1, 0.5), new THREE.Color(0.7, 0.8, 0.9)], // Deep Blue + Pale Blue Grey
-            'neutral': [new THREE.Color(1, 1, 1)] // White
+            'neutral': [new THREE.Color(1, 1, 1), new THREE.Color(1.0, 0.75, 0.8)] // White + Soft Pink
         };
         
         this.isManualColor = false;
@@ -371,28 +371,8 @@ export class ParticleSystem {
     setEmotion(emotion) {
         if (this.isManualColor) return; // Skip if user manually set color
         
-        // If it's the christmas tree, we might want to preserve its specific colors (green/brown/yellow/ornaments)
-        // UNLESS the user wants the emotion to override everything? 
-        // The requirement says: "Face expression maps to particle color". 
-        // But for a complex colored model like the new tree, overriding everything with one color looks bad.
-        // Let's tint it or only override if it's not the detailed tree? 
-        // Or maybe just "tint" the whole tree?
-        // Let's map emotion color but blend it or just override.
-        // Given the user wants "Tree looks like THIS", they probably want the green tree first.
-        // Let's assume: 
-        // 1. Default state -> Model's natural colors.
-        // 2. Emotion detected -> Tint or Change colors?
-        // "开心 → 粒子暖色调" implies changing the color.
-        // BUT for a multi-colored tree, turning it all yellow is weird.
-        // Let's compromise: If model is 'christmasTree', we only tint the "Green" parts? 
-        // Or we just override everything because that's the "Particle System" aesthetic (usually monochrome or gradient).
-        // However, to make the tree "Look like the image", it needs Green leaves, Brown trunk, Yellow star.
-        // If I override all that with "Blue" because I'm surprised, it loses the "Tree" look.
-        
-        // DECISION: If emotion is 'neutral', restore original model colors.
-        // If emotion is active, blend target color.
-        
-        if (emotion === 'neutral') {
+        // If emotion is 'happy', restore original model colors (Green Tree)
+        if (emotion === 'happy') {
              this.restoreOriginalColors();
              return;
         }
