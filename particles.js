@@ -77,7 +77,7 @@ export class ParticleSystem {
         this.scene.add(this.mesh);
 
         this.emotionColorMap = {
-            'happy': [new THREE.Color(1.0, 0.84, 0.0), new THREE.Color(0.87, 0.19, 0.39)], // Gold + Cherry Red
+            'happy': [new THREE.Color(1.0, 0.9, 0.1), new THREE.Color(1.0, 0.4, 0.1), new THREE.Color(1.0, 0.2, 0.6)], // Sunny Yellow + Orange + Hot Pink
             'surprise': [new THREE.Color(0.2, 1.0, 0.0), new THREE.Color(1.0, 0.0, 1.0)], // Lime Green + Magenta
             'angry': [new THREE.Color(1.0, 0.0, 0.0), new THREE.Color(1.0, 0.5, 0.0)], // Red + Orange
             'sad': [new THREE.Color(0.1, 0.1, 0.5), new THREE.Color(0.7, 0.8, 0.9)], // Deep Blue + Pale Blue Grey
