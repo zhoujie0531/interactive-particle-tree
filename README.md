@@ -2,6 +2,12 @@
 
 A real-time interactive 3D visualization project that responds to user gestures and facial expressions. Built with Three.js and MediaPipe.
 
+## Deploy to EdgeOne Pages
+One-click deployment to EdgeOne Pages provides an instant access link!
+
+[![Deploy to EdgeOne Pages](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2Fzhoujie0531%2Finteractive-particle-tree)
+
+
 ## 🎮 Controls
 
 *   **Top Right Panel**:
@@ -53,11 +59,6 @@ Since this project uses ES6 Modules, it requires a local web server to run (to a
         *   Right-click `index.html` and choose "Open with Live Server".
 3.  **Open your browser** to `http://localhost:8000` (or the port shown).
 4.  **Allow Camera Access**: The application requires webcam access to track gestures and expressions.
-
-## Deploy to EdgeOne Pages
-One-click deployment to EdgeOne Pages provides an instant access link!
-
-[![Deploy to EdgeOne Pages](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2Fzhoujie0531%2Finteractive-particle-tree)
 
 ## 📂 Project Structure
 
