@@ -67,6 +67,67 @@ One-click deployment to EdgeOne Pages provides an instant access link!
 *   `vision.js`: `VisionManager` class, handles MediaPipe model initialization and inference logic.
 *   `style.css`: Basic styling for UI elements.
 
+## Suggested Prompt
+、、、
+Role Setting: You are a senior front-end engineer proficient in WebGL (Three.js) and computer vision (MediaPipe).
+
+Objective: Develop a web-based interactive 3D particle system project, centered around a 3D Christmas tree composed of tens of thousands of particles. The system should be capable of altering the Christmas tree’s form and color in real time by capturing user gestures and facial expressions via a camera.
+
+Core Requirements:
+
+3D Particle Rendering (Three.js):
+
+Create a 3D scene with 50,000+ particles.
+
+Use THREE.Points and a custom ShaderMaterial to render particles, achieving high performance and a glowing effect.
+
+Model Form: The core model is a Christmas Tree, with particles forming a clear trunk, three layers of conical foliage, and decorative accents.
+
+Dynamic Effects: Particles should have subtle floating animations and transition smoothly via Lerp interpolation during state changes.
+
+Gesture Interaction (MediaPipe Hands):
+
+Integrate the MediaPipe Hands library to track the user’s hand in real time via the camera.
+
+Function: Calculate the degree of hand openness (0% clenched fist - 100% fully open).
+
+Interaction Logic: The degree of hand openness directly controls the Christmas tree’s size/scale (clenched fist makes it smaller, open hand makes it larger).
+
+Emotion Recognition Interaction (MediaPipe Face Mesh):
+
+Integrate the MediaPipe Face Mesh library to analyze user facial landmarks in real time.
+
+Recognize the following 5 emotions and change the particle color theme accordingly:
+
+😐 Neutral: The entire tree adopts a dreamy white + soft pink style (no yellow star at the top).
+
+😄 Happy: Restores the classic Christmas tree colors green foliage, brown trunk, colorful lights, golden top star.
+
+😲 Surprise: Switches to a bright warm palette of sunny yellow + vibrant orange + hot pink.
+
+😠 Angry: Switches to a cautionary palette of red + orange (optimize eyebrow recognition thresholds for easier triggering).
+
+😢 Sad: Switches to a cool palette of midnight dark blue + steel blue.
+
+UI Interface:
+
+Top-left display: Real-time hand openness percentage (✋ Hand Open/Close).
+
+Top-right display: Currently detected emotional state (😄 Emotion).
+
+Control Panel (GUI): Includes "Base Color," "Particle Count," "Auto Rotate," "Toggle Fullscreen."
+
+Note: No model shape switching functionality is provided; the focus is solely on the Christmas tree.
+
+Tech Stack & Specifications:
+
+Front-end Framework: Vanilla JS (ES6 modules) or a simple HTML/CSS/JS structure.
+
+Libraries: Three.js (rendering), MediaPipe (vision), lil-gui (control panel).
+
+Style: Dark background (#050505), glowing particles, combining a modern tech aesthetic with festive ambiance.
+、、、
+
 
 
 
