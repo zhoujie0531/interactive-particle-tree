@@ -2,35 +2,35 @@
 
 A real-time interactive 3D visualization project that responds to user gestures and facial expressions. Built with Three.js and MediaPipe.
 
-## Features
+## ✨ Features
 
 *   **Dynamic Particle Models**: Transform particles into various shapes including Christmas Tree, Heart, Flower, Saturn, and Fireworks.
 *   **Hand Gesture Control**: Use your hand to control the scale and dispersion of the particles.
     *   **Open Hand**: Particles expand/scale up.
     *   **Closed Fist**: Particles contract/scale down.
 *   **Facial Expression Recognition**: The system detects your facial emotions and changes the particle colors accordingly.
-    *   **Happy** → Sunny Yellow, Orange & Hot Pink mix
-    *   **Surprise** → Lime Green & Magenta mix
-    *   **Angry** → Red & Orange mix
-    *   **Sad** → Deep Blue & Pale Grey mix
-    *   **Neutral** → Original model colors
-*   **High-Performance Rendering**: Optimized buffer geometry rendering 60,000+ particles.
+    *   **😐 Neutral**: Dreamy mix of White & Soft Pink.
+    *   **😄 Happy**: Restores the original colorful Christmas tree (Green leaves, lights, gold star).
+    *   **😲 Surprise**: Bright mix of Sunny Yellow, Vibrant Orange & Hot Pink.
+    *   **😠 Angry**: Warning mix of Red & Orange.
+    *   **😢 Sad**: Melancholic mix of Deep Blue & Pale Blue-Grey.
+*   **High-Performance Rendering**: Optimized buffer geometry rendering 60,000+ particles for a delicate visual experience.
 
-## Technologies Used
+## 🛠️ Tech Stack
 
-*   **Three.js**: For 3D rendering and particle systems.
+*   **Three.js**: Core 3D rendering engine.
 *   **MediaPipe (Google)**:
-    *   `@mediapipe/hands`: For hand tracking and gesture recognition.
-    *   `@mediapipe/face_mesh`: For facial landmark detection and emotion analysis.
-*   **lil-gui**: For the on-screen control panel.
+    *   `@mediapipe/hands`: High-precision hand tracking.
+    *   `@mediapipe/face_mesh`: Face mesh and landmark detection.
+*   **lil-gui**: Lightweight on-screen parameter control panel.
 
-## Installation & Running
+## 🚀 Local Development
 
 Since this project uses ES6 Modules, it requires a local web server to run (to avoid CORS issues with `file://` protocol).
 
 1.  **Clone the repository** or download the source code.
 2.  **Start a local server** inside the project directory.
-    *   If you have Python installed:
+    *   If you have Python installed (Recommended):
         ```bash
         # Python 3
         python3 -m http.server 8000
@@ -45,7 +45,10 @@ Since this project uses ES6 Modules, it requires a local web server to run (to a
 3.  **Open your browser** to `http://localhost:8000` (or the port shown).
 4.  **Allow Camera Access**: The application requires webcam access to track gestures and expressions.
 
-## Project Structure
+## Deploy to EdgeOne Pages
+[![Deploy to EdgeOne Pages](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2Fzhoujie0531%2Fpayload-mongodb-starter)
+
+## 📂 Project Structure
 
 *   `index.html`: Entry point, imports dependencies and sets up the DOM.
 *   `main.js`: Main application logic, scene initialization, and render loop.
@@ -53,8 +56,15 @@ Since this project uses ES6 Modules, it requires a local web server to run (to a
 *   `vision.js`: `VisionManager` class, handles MediaPipe model initialization and inference logic.
 *   `style.css`: Basic styling for UI elements.
 
-## Controls
+## 🎮 Controls
 
-*   **Top Right Panel**: Use the GUI to manually switch shapes, change base colors, or toggle auto-rotation.
-*   **Webcam Interaction**: Move your hand or change your facial expression to interact with the particles in real-time.
+*   **Top Right Panel**:
+    *   `Model Shape`: Switch between particle shapes (Tree, Heart, etc.).
+    *   `Base Color`: Manually set base color (overrides emotion colors).
+    *   `Particle Count`: Adjust particle count (Press Enter to confirm).
+    *   `Auto Rotate`: Toggle auto-rotation.
+*   **Webcam Interaction**:
+    *   Face your palm to the camera, try opening and closing your hand.
+    *   Make exaggerated expressions (laugh, surprise, frown) to the camera and observe the color changes.
+
 
