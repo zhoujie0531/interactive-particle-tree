@@ -55,7 +55,7 @@
 4.  **允许摄像头权限**：页面加载后会请求摄像头权限，请点击“允许”以体验交互功能。
 
 ## 一键部署到 EdgeOne Pages
-    [![使用 EdgeOne Pages 部署](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2Fzhoujie0531%2Fpayload-mongodb-starter)
+    [![使用 EdgeOne Pages 部署](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2Fzhoujie0531%2Finteractive-particle-tree)
 
 ## 📂 项目结构
 
