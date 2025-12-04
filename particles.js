@@ -77,10 +77,10 @@ export class ParticleSystem {
         this.scene.add(this.mesh);
 
         this.emotionColorMap = {
-            'happy': [], // Will be handled specially to restore original colors
+            'happy': [new THREE.Color(1.0, 0.4, 0.7), new THREE.Color(1.0, 0.0, 0.5)], // Hot Pink + Magenta Pink
             'surprise': [new THREE.Color(1.0, 0.9, 0.1), new THREE.Color(1.0, 0.4, 0.1), new THREE.Color(1.0, 0.2, 0.6)], // Old Happy colors (Sunny Yellow + Orange + Hot Pink)
             'angry': [new THREE.Color(1.0, 0.0, 0.0), new THREE.Color(1.0, 0.5, 0.0)], // Red + Orange
-            'sad': [new THREE.Color(0.1, 0.1, 0.5), new THREE.Color(0.7, 0.8, 0.9)], // Deep Blue + Pale Blue Grey
+            'sad': [new THREE.Color(0.05, 0.05, 0.4), new THREE.Color(0.2, 0.3, 0.5)], // Dark Midnight Blue + Steel Blue
             'neutral': [new THREE.Color(1, 1, 1), new THREE.Color(1.0, 0.75, 0.8)] // White + Soft Pink
         };
         
@@ -352,6 +352,34 @@ export class ParticleSystem {
 
     transitionTo(type) {
         this.generateModel(type);
+        // Re-apply current emotion color logic after model change
+        // Because generateModel resets targetColors to originalColors (which are neutral-ish white)
+        // We need to check what the current emotion is supposed to be.
+        // But we don't have access to 'state.emotion' here easily unless we store it.
+        // Let's just let the next update loop handle it? 
+        // No, setEmotion is called by VisionManager.
+        // However, VisionManager calls setEmotion every frame?
+        // In main.js: onVisionUpdate calls particleSystem.setEmotion(data.face.emotion) every frame.
+        // So it should correct itself immediately in the next frame.
+        
+        // ISSUE: generateModel sets `this.isManualColor`? No.
+        // generateModel sets `this.targetColors` to `colors` (which are white).
+        
+        // Wait, why did Heart look white?
+        // 1. User switches to Heart.
+        // 2. generateModel('heart') runs.
+        //    -> Heart generated white.
+        //    -> originalColors = White.
+        //    -> targetColors = White.
+        // 3. Next frame, onVisionUpdate runs.
+        //    -> setEmotion('happy') runs.
+        //    -> if (emotion === 'happy') { if not tree -> animateToColor(pink) }
+        //    -> This SHOULD work.
+        
+        // Maybe the issue is that `animateToColor` picks random colors but if the target is white, it might not be obvious?
+        // Or maybe `emotionColorMap['happy']` is not being picked up correctly?
+        // Let's debug by ensuring we force an update if we know the emotion. 
+        // But we don't store current emotion in ParticleSystem.
     }
 
     updateParticleCount(count) {
@@ -371,9 +399,17 @@ export class ParticleSystem {
     setEmotion(emotion) {
         if (this.isManualColor) return; // Skip if user manually set color
         
-        // If emotion is 'happy', restore original model colors (Green Tree)
+        // Store current emotion
+        this.currentEmotion = emotion;
+        
         if (emotion === 'happy') {
-             this.restoreOriginalColors();
+             if (this.currentModel === 'christmasTree') {
+                this.restoreOriginalColors();
+             } else {
+                // Explicitly log or ensure this path is hit
+                const color = this.emotionColorMap['happy'];
+                this.animateToColor(color);
+             }
              return;
         }
 

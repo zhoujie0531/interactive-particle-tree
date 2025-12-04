@@ -186,7 +186,8 @@ export class VisionManager {
             }
             // Angry: Brows squeezed together
             // Normal ratio is around 0.25-0.30. Squeezed is < 0.22
-            else if (browRatio < 0.23) {
+            // Relaxed threshold: 0.24
+            else if (browRatio < 0.25) {
                 emotion = 'angry';
             }
             // Sad: Corners below center

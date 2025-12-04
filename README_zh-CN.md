@@ -2,9 +2,18 @@
 
 这是一个基于 Three.js 和 MediaPipe 构建的实时交互式 3D 可视化项目。它能够通过摄像头捕捉用户的手势和面部表情，并据此改变 3D 粒子系统的形态、颜色和动态效果。
 
+## 🎮 操作说明
+
+*   **右上角控制面板**：
+    *   `Base Color`: 手动设置基础颜色（会覆盖情绪颜色）。
+    *   `Particle Count`: 调整粒子数量（需回车确认）。
+    *   `Auto Rotate`: 开启/关闭自动旋转。
+*   **摄像头交互**：
+    *   将手掌面向摄像头，尝试张开和握拳。
+    *   面对摄像头做出夸张的表情（微笑、惊讶、皱眉），观察树的颜色变化。
+
 ## ✨ 功能特性
 
-*   **动态粒子模型**：支持多种粒子形态变换，包括圣诞树、爱心、花朵、土星和烟花。
 *   **手势控制 (Hand Tracking)**：通过手势控制粒子的缩放和扩散。
     *   **张开手掌**：粒子扩散/放大。
     *   **握紧拳头**：粒子收缩/缩小。
@@ -47,7 +56,7 @@
 
 ## 一键部署到 EdgeOne Pages
     [![使用 EdgeOne Pages 部署](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2Fzhoujie0531%2Fpayload-mongodb-starter)
-    
+
 ## 📂 项目结构
 
 *   `index.html`: 入口文件，引入依赖库和样式。
@@ -56,15 +65,6 @@
 *   `vision.js`: `VisionManager` 类，封装了 MediaPipe 的 AI 模型初始化和推理逻辑。
 *   `style.css`: 简单的 UI 样式。
 
-## 🎮 操作说明
 
-*   **右上角控制面板**：
-    *   `Model Shape`: 切换粒子组成的形状（树、心形等）。
-    *   `Base Color`: 手动设置基础颜色（会覆盖情绪颜色）。
-    *   `Particle Count`: 调整粒子数量（需回车确认）。
-    *   `Auto Rotate`: 开启/关闭自动旋转。
-*   **摄像头交互**：
-    *   将手掌面向摄像头，尝试张开和握拳。
-    *   面对摄像头做出夸张的表情（大笑、惊讶、皱眉），观察树的颜色变化。
 
 

@@ -2,9 +2,18 @@
 
 A real-time interactive 3D visualization project that responds to user gestures and facial expressions. Built with Three.js and MediaPipe.
 
+## 🎮 Controls
+
+*   **Top Right Panel**:
+    *   `Base Color`: Manually set base color (overrides emotion colors).
+    *   `Particle Count`: Adjust particle count (Press Enter to confirm).
+    *   `Auto Rotate`: Toggle auto-rotation.
+*   **Webcam Interaction**:
+    *   Face your palm to the camera, try opening and closing your hand.
+    *   Make exaggerated expressions (laugh, surprise, frown) to the camera and observe the color changes.
+
 ## ✨ Features
 
-*   **Dynamic Particle Models**: Transform particles into various shapes including Christmas Tree, Heart, Flower, Saturn, and Fireworks.
 *   **Hand Gesture Control**: Use your hand to control the scale and dispersion of the particles.
     *   **Open Hand**: Particles expand/scale up.
     *   **Closed Fist**: Particles contract/scale down.
@@ -56,15 +65,6 @@ Since this project uses ES6 Modules, it requires a local web server to run (to a
 *   `vision.js`: `VisionManager` class, handles MediaPipe model initialization and inference logic.
 *   `style.css`: Basic styling for UI elements.
 
-## 🎮 Controls
 
-*   **Top Right Panel**:
-    *   `Model Shape`: Switch between particle shapes (Tree, Heart, etc.).
-    *   `Base Color`: Manually set base color (overrides emotion colors).
-    *   `Particle Count`: Adjust particle count (Press Enter to confirm).
-    *   `Auto Rotate`: Toggle auto-rotation.
-*   **Webcam Interaction**:
-    *   Face your palm to the camera, try opening and closing your hand.
-    *   Make exaggerated expressions (laugh, surprise, frown) to the camera and observe the color changes.
 
 

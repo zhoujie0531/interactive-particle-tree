@@ -13,7 +13,7 @@ import { VisionManager } from './vision.js';
 // State Management
 const state = {
     particleCount: 50000,
-    modelType: 'christmasTree', // 'christmasTree', 'heart', 'flower', 'saturn', 'fireworks'
+    modelType: 'christmasTree',
     baseColor: '#ffffff',
     handDistance: 1.0, // 0.0 (closed) to 1.0 (open) -> affects spread
     emotion: 'neutral', // 'neutral', 'happy', 'surprise', 'angry', 'sad'
@@ -87,9 +87,6 @@ function onVisionUpdate(data) {
 
 // UI
 const gui = new GUI({ title: 'Controls' });
-gui.add(state, 'modelType', ['christmasTree', 'heart', 'flower', 'saturn', 'fireworks'])
-    .name('Model Shape')
-    .onChange(val => particleSystem.transitionTo(val));
 
 gui.addColor(state, 'baseColor')
     .name('Base Color')
