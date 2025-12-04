@@ -69,7 +69,8 @@ Since this project uses ES6 Modules, it requires a local web server to run (to a
 *   `style.css`: Basic styling for UI elements.
 
 ## Suggested Prompt
-、、、
+```text
+
 Role Setting: You are a senior front-end engineer proficient in WebGL (Three.js) and computer vision (MediaPipe).
 
 Objective: Develop a web-based interactive 3D particle system project, centered around a 3D Christmas tree composed of tens of thousands of particles. The system should be capable of altering the Christmas tree’s form and color in real time by capturing user gestures and facial expressions via a camera.
@@ -127,7 +128,7 @@ Front-end Framework: Vanilla JS (ES6 modules) or a simple HTML/CSS/JS structure.
 Libraries: Three.js (rendering), MediaPipe (vision), lil-gui (control panel).
 
 Style: Dark background (#050505), glowing particles, combining a modern tech aesthetic with festive ambiance.
-、、、
+```
 
 
 
