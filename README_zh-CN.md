@@ -3,7 +3,7 @@
 这是一个基于 Three.js 和 MediaPipe 构建的实时交互式 3D 可视化项目。它能够通过摄像头捕捉用户的手势和面部表情，并据此改变 3D 粒子系统的形态、颜色和动态效果。
 
 ## 一键部署到 EdgeOne Pages
-一键部署到 EdgeOne Pages 即可提供即时访问链接!
+免费一键部署到 EdgeOne Pages 即可提供即时访问链接!
 
 [![使用 EdgeOne Pages 部署](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2Fzhoujie0531%2Finteractive-particle-tree)
 

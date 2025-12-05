@@ -3,7 +3,7 @@
 A real-time interactive 3D visualization project that responds to user gestures and facial expressions. Built with Three.js and MediaPipe.
 
 ## Deploy to EdgeOne Pages
-One-click deployment to EdgeOne Pages provides an instant access link!
+Free one-click deployment to EdgeOne Pages
 
 [![Deploy to EdgeOne Pages](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2Fzhoujie0531%2Finteractive-particle-tree)
 
