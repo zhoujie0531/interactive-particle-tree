@@ -15,6 +15,7 @@ body {
     width: 100%;
     height: 100%;
     z-index: 1;
+    touch-action: none; /* Prevent scrolling while interacting with 3D scene */
 }
 
 /* UI Controls Container (Custom styling for lil-gui if needed, but lil-gui handles its own) */
@@ -93,4 +94,164 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+/* Modal Styles */
+.hidden {
+    display: none !important;
+}
+
+#letter-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.letter-content {
+    background: #fffafa;
+    color: #333;
+    padding: 40px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+    border: 5px solid #d42426;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.letter-content h2 {
+    color: #d42426;
+    margin-top: 0;
+    font-family: 'Georgia', serif;
+    font-size: 2em;
+    border-bottom: 2px dashed #228b22;
+    padding-bottom: 10px;
+}
+
+.letter-content p {
+    font-size: 1.5em;
+    line-height: 1.6;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: #2e4a2e;
+    margin: 30px 0;
+    font-style: italic; /* Add italic to keep a bit of the "handwritten" feel but readable */
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 30px;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s;
+}
+
+.close-btn:hover {
+    color: #d42426;
+}
+
+@keyframes popIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Decoration Palette */
+#palette-container {
+    position: absolute;
+    top: 140px; /* Below Info Panel */
+    left: 20px;
+    bottom: auto; /* Reset bottom */
+    transform: none; /* Reset transform */
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 15px 10px; /* Adjusted padding */
+    border-radius: 20px; /* Less rounded corners for sidebar */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+    gap: 10px;
+    z-index: 200;
+    transition: all 0.3s ease;
+    width: 70px; /* Constrain width */
+}
+
+.palette-title {
+    display: none; /* Hide title to save space */
+}
+
+.palette-items {
+    display: flex;
+    flex-direction: column; /* Vertical alignment */
+    gap: 10px;
+}
+
+.palette-item {
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid transparent;
+    position: relative; /* For absolute positioning of children */
+}
+
+.upload-btn {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    background: #3498db;
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.palette-item.selected .upload-btn,
+.palette-item:hover .upload-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.palette-item:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.palette-item.selected {
+    background: #fff;
+    border-color: #ffd700;
+    transform: scale(1.2) translateX(5px); /* Move right slightly instead of up */
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+}
+
+/* Hide instructions as palette is self-explanatory */
+.instructions {
+    display: none;
 }

@@ -4,6 +4,11 @@ export class VisionManager {
         this.faceMesh = null;
         this.camera = null;
         this.onUpdate = null;
+        
+        // Emotion Smoothing State
+        this.emotionHistory = [];
+        this.historySize = 7; // Increased window for better stability
+        this.lastStableEmotion = 'neutral';
     }
 
     async init(videoElement, callback) {
@@ -169,35 +174,52 @@ export class VisionManager {
             const browRatio = browDist / faceWidth;
             
             // --- DECISION TREE ---
-            // Prioritize distinct expressions
-            
+            // Prioritize distinct expressions with Tuned Thresholds
+            let rawEmotion = 'neutral';
+
             // Surprise: Significant mouth opening
-            // Lowered threshold slightly to 0.08 (8%) to make it responsive but not too trigger-happy
-            // If it was too easy before, maybe 0.15 was actually fine? 
-            // User said "Only detects Neutral and Surprise", implies Surprise is working or over-working.
-            // Let's keep it at 0.10 to balance.
-            if (mouthOpenRatio > 0.12) {
-                emotion = 'surprise';
+            // Increased to 0.15 to prevent accidental surprise when talking/breathing
+            if (mouthOpenRatio > 0.15) {
+                rawEmotion = 'surprise';
             } 
             // Happy: Corners noticeably above center
-            // Threshold 0.03 seems reasonable for a smile
-            else if (smileVal > 0.03) {
-                emotion = 'happy';
+            // Lowered slightly to 0.025 to make smiling easier
+            else if (smileVal > 0.025) {
+                rawEmotion = 'happy';
             }
             // Angry: Brows squeezed together
-            // Normal ratio is around 0.25-0.30. Squeezed is < 0.22
-            // Relaxed threshold: 0.24
-            else if (browRatio < 0.25) {
-                emotion = 'angry';
+            // Relaxed to 0.27 (easier to trigger)
+            else if (browRatio < 0.27) {
+                rawEmotion = 'angry';
             }
             // Sad: Corners below center
-            // Often hard to detect without exaggeration
             else if (smileVal < -0.02) {
-                emotion = 'sad';
+                rawEmotion = 'sad';
             }
-            else {
-                emotion = 'neutral';
+            
+            // --- SMOOTHING LOGIC ---
+            this.emotionHistory.push(rawEmotion);
+            if (this.emotionHistory.length > this.historySize) this.emotionHistory.shift();
+            
+            // Find dominant emotion in history
+            const counts = {};
+            let maxCount = 0;
+            let modeEmotion = this.lastStableEmotion; // Default to keeping current if ambiguity
+            
+            for (const e of this.emotionHistory) {
+                counts[e] = (counts[e] || 0) + 1;
+                if (counts[e] > maxCount) {
+                    maxCount = counts[e];
+                    modeEmotion = e;
+                }
             }
+            
+            // Stability Check: Only switch if confidence is high (> 50% of history frames)
+            if (maxCount >= Math.ceil(this.historySize * 0.5)) {
+                this.lastStableEmotion = modeEmotion;
+            }
+            
+            emotion = this.lastStableEmotion;
         }
         
         this.lastEmotion = emotion;

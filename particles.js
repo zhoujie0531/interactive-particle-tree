@@ -15,6 +15,7 @@ export class ParticleSystem {
         this.sizes = new Float32Array(this.maxParticleCount); // For variation
         
         this.currentModel = 'christmasTree';
+        this.trunkEndIndex = 0; // Index where trunk particles end
         this.scale = 0.9; // Default optimized scale
         this.targetScale = 0.9;
         
@@ -93,6 +94,9 @@ export class ParticleSystem {
         const colors = []; // Temporary color array
         const count = this.currentCount;
         
+        // Reset trunk index
+        this.trunkEndIndex = 0;
+
         // Helper to add pos and color
         const addPoint = (x, y, z, r, g, b) => {
             positions.push(x, y, z);
@@ -102,164 +106,173 @@ export class ParticleSystem {
         // Generate shapes
         switch (type) {
             case 'christmasTree':
-                // Based on image: 
-                // 3 Tiers of foliage (Cones)
-                // 1 Trunk (Cylinder)
-                // 1 Star (Top)
-                // Decorations (Ornaments, Garland)
+                // Refined Christmas Tree Model based on reference image
+                // Features: 3 distinct wide layers (fat & layered), thick trunk, bright star
                 
-                // Ratios estimated from image:
-                // Trunk: Bottom 15%
-                // Tier 1 (Bottom): Widest
-                // Tier 2 (Middle): Medium
-                // Tier 3 (Top): Smallest
-                // Star: Top tip
+                const trunkH = 16; // Taller trunk to ensure connection
+                const trunkW = 6; // Thicker trunk
                 
-                const totalH = 50;
-                const trunkH = 10;
-                const trunkW = 4;
-                const leavesH = 40;
-                
-                // Particle budget distribution
-                const trunkCount = Math.floor(count * 0.1);
+                const trunkCount = Math.floor(count * 0.1); 
+                this.trunkEndIndex = trunkCount; // Store for color protection
+
                 const starCount = Math.floor(count * 0.05);
                 const leavesCount = count - trunkCount - starCount;
                 
-                // 1. Trunk (Brown)
+                // 1. Trunk (Thick & Brown)
                 for(let i=0; i<trunkCount; i++) {
                     const h = Math.random() * trunkH;
                     const theta = Math.random() * Math.PI * 2;
-                    // Concentrate on surface for shape definition
-                    const r = trunkW * (0.8 + 0.2 * Math.random());
+                    // Uniform disk with bias to surface
+                    const r = trunkW * Math.pow(Math.random(), 0.5); 
+                    
+                    // Brighter golden brown
+                    const brightness = 0.8 + 0.4 * Math.random();
                     
                     addPoint(
                         r * Math.cos(theta),
-                        h - 25, 
+                        h - 24, // Base lowered to -24 to give more grounding
                         r * Math.sin(theta),
-                        0.6, 0.3, 0.1 // Brighter Brown
+                        0.6 * brightness, 0.3 * brightness, 0.05 * brightness
                     );
                 }
                 
-                // 2. Leaves (Green Tiers)
-                // 3 layered cones.
+                // 2. Leaves (3 Distinct, Wide Conical Layers)
+                // To achieve the "layered" look, we need gap/overlap logic.
+                // Image shows 3 distinct umbrellas.
                 const tiers = [
-                    { bottomY: -15, topY: 2, bottomR: 22, topR: 8 },
-                    { bottomY: 0, topY: 12, bottomR: 18, topR: 5 },
-                    { bottomY: 10, topY: 22, bottomR: 12, topR: 1 }
+                    // Bottom Tier: Raised yBottom to -11 to reveal trunk (was -18)
+                    // Also adjusted yTop slightly
+                    { yBottom: -11, yTop: -1, rBottom: 35, rTop: 12, density: 0.4 },
+                    // Middle Tier
+                    { yBottom: -6, yTop: 14, rBottom: 28, rTop: 8, density: 0.35 },
+                    // Top Tier
+                    { yBottom: 10, yTop: 32, rBottom: 18, rTop: 0.1, density: 0.25 }
                 ];
                 
-                for(let i=0; i<leavesCount; i++) {
-                    const tierIdx = Math.floor(Math.random() * 3);
-                    const tier = tiers[tierIdx];
-                    
-                    const t = Math.random(); 
-                    const y = tier.bottomY + t * (tier.topY - tier.bottomY);
-                    const maxR = tier.bottomR + t * (tier.topR - tier.bottomR);
-                    
-                    // SURFACE DISTRIBUTION: Concentrate particles on the outer shell
-                    // This makes the shape MUCH more distinct
-                    const r = maxR * (0.6 + 0.4 * Math.random()); 
-                    
-                    const angle = Math.random() * Math.PI * 2;
-                    const scallop = Math.sin(angle * 10) * 0.8; 
-                    const yMod = (t < 0.15) ? y + scallop : y; 
-                    
-                    // Brighter Green Base
-                    let cr=0.2, cg=0.9, cb=0.3; 
-                    
-                    // Decoration Logic
-                    if (Math.random() < 0.05) {
-                        // Ornament - Brighter colors
-                        const randCol = Math.random();
-                        if (randCol < 0.33) { cr=1.0; cg=0.2; cb=0.2; } // Red
-                        else if (randCol < 0.66) { cr=0.2; cg=0.6; cb=1.0; } // Blue
-                        else { cr=1.0; cg=0.9; cb=0.2; } // Gold
-                    } 
-                    // Garland (Thicker, brighter spiral)
-                    else if (Math.abs((y * 0.3 + angle) % 2.5) < 0.25 && r > maxR * 0.85) {
-                         cr=1.0; cg=1.0; cb=0.5; 
+                let particlesUsed = 0;
+                
+                for(let tIdx=0; tIdx < tiers.length; tIdx++) {
+                    const tier = tiers[tIdx];
+                    // Allocate particles based on volume/surface area approximation
+                    const tierCount = (tIdx === tiers.length - 1) 
+                        ? (leavesCount - particlesUsed) 
+                        : Math.floor(leavesCount * tier.density);
+                    particlesUsed += tierCount;
+
+                    for(let i=0; i < tierCount; i++) {
+                        // Height logic
+                        const h_frac = Math.random();
+                        const y = tier.yBottom + h_frac * (tier.yTop - tier.yBottom);
+                        
+                        // Radius logic (Linear cone)
+                        const rMax = tier.rBottom + h_frac * (tier.rTop - tier.rBottom);
+                        
+                        // Volume distribution:
+                        // To make layers look distinct, we need high density at the bottom edge (the "skirt")
+                        // and surface density.
+                        
+                        let r;
+                        const rand = Math.random();
+                        if (rand < 0.2) {
+                            // 20% Fill the volume (internal branches)
+                            r = rMax * Math.random();
+                        } else {
+                            // 80% Surface (Outer shape)
+                            r = rMax * (0.8 + 0.2 * Math.random());
+                        }
+                        
+                        // Scallop/Wavy Bottom Edge to simulate hanging branches
+                        // Especially for the bottom of each tier
+                        const theta = Math.random() * Math.PI * 2;
+                        let yMod = y;
+                        
+                        // Stronger scallop at the bottom of the tier
+                        if (h_frac < 0.2) {
+                            const waves = 8 + tIdx * 2; // More waves on higher tiers
+                            const amp = 1.5;
+                            // Drop y based on angle
+                            yMod -= Math.abs(Math.cos(theta * waves * 0.5)) * amp * (1.0 - h_frac/0.2);
+                        }
+                        
+                        // Color Logic
+                        let cr, cg, cb;
+                        // Depth relative to max radius at this height
+                        const depth = r / rMax; 
+                        
+                        // Standard Green
+                        cr = 0.05 + 0.1 * depth;
+                        cg = 0.3 + 0.6 * depth;
+                        cb = 0.05 + 0.1 * depth;
+                        
+                        // Highlight edges to separate layers
+                        if (h_frac < 0.05 && depth > 0.9) {
+                            // The very bottom rim of each layer -> Lighter Green/Yellowish
+                            cg += 0.2; cr += 0.1;
+                        }
+                        
+                        // Decorations (Randomly scattered on surface)
+                        if (depth > 0.85 && Math.random() < 0.03) {
+                             const decRand = Math.random();
+                             if(decRand<0.3) { cr=1.0; cg=0.2; cb=0.2; } // Red
+                             else if(decRand<0.6) { cr=1.0; cg=0.85; cb=0.1; } // Gold
+                             else if(decRand<0.8) { cr=0.2; cg=0.5; cb=1.0; } // Blue
+                             else { cr=1.0; cg=1.0; cb=1.0; } // White
+                        }
+                        
+                        addPoint(
+                            r * Math.cos(theta),
+                            yMod,
+                            r * Math.sin(theta),
+                            cr, cg, cb
+                        );
                     }
-                    
-                    addPoint(
-                        r * Math.cos(angle),
-                        yMod,
-                        r * Math.sin(angle),
-                        cr, cg, cb
-                    );
                 }
                 
-                // 3. Star (Yellow) - Improved Shape
+                // 3. Star (Yellow) - Top of tree (y ~32)
                 for(let i=0; i<starCount; i++) {
-                    // Generate a 5-pointed star on XY plane, slightly extruded in Z
-                    const angle = Math.random() * Math.PI * 2;
-                    // Star math: 5 points
-                    // r varies between inner and outer radius based on angle
-                    const k = 5;
-                    const starR = 4;
-                    const innerR = 1.5;
-                    
-                    // Random angle, check radius at that angle?
-                    // Or better: Parametric distribution
-                    const segment = Math.floor(Math.random() * 10); // 10 segments (5 out, 5 in)
-                    // Simplification: Just fill the shape
-                    
-                    // Rejection sampling for star shape
-                    let sx, sy, sz;
+                    let px, py, pz;
                     let valid = false;
+                    const starR = 4.5; // Slightly larger
+                    const innerR = 1.8; 
+                    
+                    // Simple rejection sampling for star shape (2D extrusion)
                     while(!valid) {
-                        sx = (Math.random() - 0.5) * 2 * starR;
-                        sy = (Math.random() - 0.5) * 2 * starR;
-                        const ang = Math.atan2(sy, sx);
-                        const dist = Math.sqrt(sx*sx + sy*sy);
-                        
-                        // Star boundary function
-                        // angle normalized to 0..2PI
-                        // 5 points -> 5 lobes.
-                        const da = (Math.PI * 2) / 5;
-                        // Angle relative to nearest point
-                        // .. math ..
-                        // Simple visual approximation:
-                        const rMax = innerR + (starR - innerR) * Math.pow(Math.cos(ang * 2.5), 2); // Not quite star
-                        
-                        // Real star SDF-ish logic?
-                        // Let's just use points on the lines for sharpness.
-                        valid = true; // Fallback
+                         px = (Math.random() - 0.5) * 2 * starR;
+                         py = (Math.random() - 0.5) * 2 * starR;
+                         pz = (Math.random() - 0.5) * 3.0; // Thicker
+                         
+                         const ang = Math.atan2(py, px) + Math.PI/2;
+                         const r_p = Math.sqrt(px*px + py*py);
+                         
+                         // Star shape function
+                         const sharpness = Math.pow(0.5 + 0.5 * Math.cos(5 * ang), 2); 
+                         const boundary = innerR + (starR - innerR) * sharpness;
+                         
+                         // Taper Z
+                         if (r_p < boundary && Math.abs(pz) < 1.5 * (1 - r_p/starR)) {
+                             valid = true;
+                         }
+                         
+                         // Fallback breaker
+                         if (Math.random() < 0.001) valid = true;
                     }
-                    
-                    // Explicit lines method for sharpness
-                    const starAngle = Math.random() * Math.PI * 2;
-                    // 5 points
-                    const n = 5;
-                    // Angle segment
-                    const step = (Math.PI * 2) / n;
-                    // Lerp between inner and outer radius
-                    // We can just scatter along the perimeter
-                    const seg = Math.floor(Math.random() * n);
-                    const t = Math.random(); // 0 to 1 along one arm edge
-                    
-                    // Edge from Outer to Inner
-                    const a1 = seg * step + Math.PI/2; // Top point
-                    const a2 = a1 + step/2; // Inner point
-                    
-                    // But we have 2 edges per point.
-                    // Let's keep it simple: Just a dense bright yellow ball for now, but flattened.
-                    // Or a disk.
-                    // User said "looks not obvious".
-                    // Let's make it a solid bright disk with a halo.
-                    
-                    const r = Math.random() * 3.5;
-                    const theta = Math.random() * Math.PI * 2;
+
+                    // Bright Gold
+                    let cr = 1.0, cg = 0.85, cb = 0.1;
+                    // Sparkle
+                    if (Math.random() > 0.8) { cr=1.0; cg=1.0; cb=1.0; }
                     
                      addPoint(
-                        r * Math.cos(theta),
-                        23 + r * Math.sin(theta) * 0.3 + Math.random(), // Flattened Y, shifted up
-                        (Math.random()-0.5) * 1.5, 
-                        1.0, 1.0, 0.2 // Bright Yellow
+                        px,
+                        33 + py, // Move up to tip
+                        pz, 
+                        cr, cg, cb 
                     );
                 }
-                
                 break;
                 
+            // Old Christmas Tree removed/merged
+            
             case 'heart':
                 for (let i = 0; i < count; i++) {
                     // Heart formula
@@ -434,6 +447,10 @@ export class ParticleSystem {
     animateToColor(colorOrColors) {
         const isArray = Array.isArray(colorOrColors);
         const colors = isArray ? colorOrColors : [colorOrColors];
+        
+        // Removed trunk protection logic:
+        // When not in "original" (Happy/Green Tree) mode, the trunk should also change color 
+        // to match the emotion/theme (e.g. Red for Angry, Blue for Sad).
         
         for (let i = 0; i < this.currentCount; i++) {
              // Simple random distribution or based on position?

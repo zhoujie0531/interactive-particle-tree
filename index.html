@@ -55,9 +55,44 @@
         <div id="emotion-display">😐 Emotion: Neutral</div>
         <div id="gesture-display">✋ Hand Open/Close: --</div>
     </div>
+
+    <!-- Letter Modal -->
+    <div id="letter-modal" class="hidden">
+        <div class="letter-content">
+            <span class="close-btn">&times;</span>
+            <h2>🎄 Christmas Wish 🎄</h2>
+            <p id="letter-text">Merry Christmas!</p>
+        </div>
+    </div>
+
+    <!-- Decoration Palette -->
+    <div id="palette-container">
+        <div class="palette-title">Choose a decoration to hang</div>
+        <div class="palette-items">
+            <div class="palette-item" data-type="gift"></div>
+            <!-- Envelope Removed -->
+            <div class="palette-item" data-type="bow"></div>
+            <div class="palette-item" data-type="bell"></div>
+            <div class="palette-item" data-type="snowflake"></div>
+            <div class="palette-item" data-type="star"></div>
+            <div class="palette-item" data-type="gingerbread"></div>
+            <div class="palette-item" data-type="snowman"></div>
+            <!-- Ball Removed -->
+            <div class="palette-item" data-type="candycane"></div>
+            <div class="palette-item" data-type="wreath"></div>
+            <div class="palette-item" data-type="photo">
+                <span class="photo-icon">📷</span>
+                <div class="upload-btn" title="Change Photo">🔄</div>
+            </div>
+            <div class="palette-item" data-type="delete" style="border-color: #ff4444;">🗑️</div>
+        </div>
+    </div>
     
     <!-- Video input for MediaPipe -->
     <video class="input_video"></video>
+
+    <!-- Hidden File Input for Photo Upload -->
+    <input type="file" id="photo-upload" accept="image/*" style="display: none;">
 
     <!-- Main Entry Point -->
     <script type="module" src="./main.js"></script>
