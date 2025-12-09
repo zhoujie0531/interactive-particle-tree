@@ -688,6 +688,10 @@ function updateMouse(event) {
 function onPointerDown(event) {
     updateMouse(event);
     
+    // Always record start position to distinguish Click vs Drag (Camera Rotation)
+    dragStartPos.set(event.clientX, event.clientY);
+    dragStartTime = Date.now();
+    
     // 1. If Placing Mode (Palette Selected):
     // Let OrbitControls handle rotation, we place on Click (PointerUp).
     // But we don't want to start dragging existing items.
@@ -709,8 +713,7 @@ function onPointerDown(event) {
             // Hit a decoration! Start Dragging.
             isDragging = true;
             draggedObject = target;
-            dragStartPos.set(event.clientX, event.clientY);
-            dragStartTime = Date.now();
+            // dragStartPos/Time already set above
             
             // Disable Controls so we don't rotate camera while dragging object
             controls.enabled = false;
@@ -779,8 +782,17 @@ function onPointerUp(event) {
         const timeDiff = Date.now() - dragStartTime;
         
         if (dist < 5 && timeDiff < 300) {
-            // It was a click -> Open Letter
-             if (draggedObject.userData.message) {
+            // It was a click -> Open Letter or Photo
+            const type = draggedObject.userData.type;
+            
+            if (type === 'photo') {
+                // Get image from texture
+                // draggedObject is a Mesh, material is MeshBasicMaterial, map is CanvasTexture
+                if (draggedObject.material && draggedObject.material.map) {
+                    const imgData = draggedObject.material.map.image.toDataURL();
+                    showLetter(null, imgData);
+                }
+            } else if (draggedObject.userData.message) {
                 showLetter(draggedObject.userData.message);
             }
         }
@@ -791,6 +803,13 @@ function onPointerUp(event) {
 
     // Placing / Deleting Logic (Only if Palette Selected)
     if (selectedDecorationType) {
+        // Validation: Was this a click or a camera drag?
+        // If distance moved is > 5px, assume camera rotation -> Cancel placement
+        const dist = dragStartPos.distanceTo(new THREE.Vector2(event.clientX, event.clientY));
+        if (dist > 5) {
+            return;
+        }
+
         if (selectedDecorationType === 'delete') {
             // Deletion Mode: Check intersection with existing decorations
             raycaster.setFromCamera(mouse, camera);
@@ -850,11 +869,23 @@ function onPointerUp(event) {
 
 // Modal Logic
 const modal = document.getElementById('letter-modal');
+const modalContent = document.querySelector('.letter-content');
 const modalText = document.getElementById('letter-text');
+const modalImage = document.getElementById('letter-image'); // New Image Element
 const closeBtn = document.querySelector('.close-btn');
 
-function showLetter(message) {
-    modalText.textContent = message;
+function showLetter(message, imageSrc = null) {
+    if (imageSrc) {
+        modalText.style.display = 'none';
+        modalImage.src = imageSrc;
+        modalImage.style.display = 'block';
+        modalContent.classList.add('image-mode');
+    } else {
+        modalText.textContent = message;
+        modalText.style.display = 'block';
+        modalImage.style.display = 'none';
+        modalContent.classList.remove('image-mode');
+    }
     modal.classList.remove('hidden');
     // state.autoRotate = false; // Pause rotation while reading // Already handled or desired?
 }
@@ -1425,7 +1456,9 @@ const colorOptions = {
     'Festive Red': '#d42426',
     'Winter Blue': '#00bfff',
     'Pine Green': '#2e8b57',
-    'Midnight Purple': '#4b0082'
+    'Midnight Purple': '#4b0082',
+    'Pink & White Dream': 'pink_white_mix',
+    'White & Blue': 'white_blue_mix'
 };
 
 // Find the key for the current baseColor to set initial value, or default to Natural
@@ -1444,6 +1477,20 @@ const treeColorCtrl = gui.add(guiState, 'colorName', Object.keys(colorOptions))
         if (val === 'natural') {
             particleSystem.isManualColor = true;
             particleSystem.restoreOriginalColors();
+        } else if (val === 'pink_white_mix') {
+            particleSystem.isManualColor = true;
+            // Top Star Pink, Rest White
+            particleSystem.animateToSegmentColors(
+                new THREE.Color(0xFFFFFF), // Base (White)
+                new THREE.Color(0xFFB7C5)  // Star (Pink)
+            );
+        } else if (val === 'white_blue_mix') {
+            particleSystem.isManualColor = true;
+            // Top Star Blue, Rest White
+            particleSystem.animateToSegmentColors(
+                new THREE.Color(0xFFFFFF), // Base (White)
+                new THREE.Color(0x7EC0EE)  // Star (Blue)
+            );
         } else {
             state.baseColor = val;
             particleSystem.setBaseColor(state.baseColor);
@@ -1456,8 +1503,8 @@ gui.add(state, 'autoRotate').name('Auto Rotate');
 // Gesture Control
 gui.add(state, 'enableGesture').name('Hand Gesture').onChange(enabled => {
     if (!enabled) {
-        particleSystem.setTargetScale(0.9); // Reset to default
-        document.getElementById('gesture-display').innerHTML = `✋ Hand Gesture: Disabled`;
+        particleSystem.setTargetScale(1.1); // Reset to Open (100% / 1.1 scale)
+        document.getElementById('gesture-display').innerHTML = `✋ Hand Gesture: Disabled (100%)`;
     } else {
         document.getElementById('gesture-display').innerHTML = `✋ Hand Gesture: Detecting...`;
     }

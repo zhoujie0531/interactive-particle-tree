@@ -81,7 +81,7 @@ export class ParticleSystem {
             'happy': [new THREE.Color(1.0, 0.4, 0.7), new THREE.Color(1.0, 0.0, 0.5)], // Hot Pink + Magenta Pink
             'surprise': [new THREE.Color(1.0, 0.9, 0.1), new THREE.Color(1.0, 0.4, 0.1), new THREE.Color(1.0, 0.2, 0.6)], // Old Happy colors (Sunny Yellow + Orange + Hot Pink)
             'angry': [new THREE.Color(1.0, 0.0, 0.0), new THREE.Color(1.0, 0.5, 0.0)], // Red + Orange
-            'sad': [new THREE.Color(0.05, 0.05, 0.4), new THREE.Color(0.2, 0.3, 0.5)], // Dark Midnight Blue + Steel Blue
+            'sad': [new THREE.Color('#00bfff')], // Winter Blue
             'neutral': [new THREE.Color(1, 1, 1), new THREE.Color(1.0, 0.75, 0.8)] // White + Soft Pink
         };
         
@@ -116,6 +116,7 @@ export class ParticleSystem {
                 this.trunkEndIndex = trunkCount; // Store for color protection
 
                 const starCount = Math.floor(count * 0.05);
+                this.starStartIndex = count - starCount; // Store start index of star (added last)
                 const leavesCount = count - trunkCount - starCount;
                 
                 // 1. Trunk (Thick & Brown)
@@ -463,6 +464,39 @@ export class ParticleSystem {
         }
     }
 
+    animateToVerticalGradient(topColor, bottomColor, thresholdY, fadeRange = 10) {
+        // topColor/bottomColor are THREE.Color
+        for (let i = 0; i < this.currentCount; i++) {
+            const idx = i * 3;
+            const y = this.targetPositions[idx + 1]; // Use target Y (shape) not current Y (animation)
+            
+            let color;
+            
+            // Simple logic: If Y > threshold, go towards topColor
+            // Let's do a smooth mix
+            // Normalized height relative to threshold
+            // If y > threshold + fade, 100% top
+            // If y < threshold - fade, 100% bottom
+            
+            let alpha = (y - (thresholdY - fadeRange)) / (2 * fadeRange);
+            // Clamp 0..1
+            if (alpha < 0) alpha = 0;
+            if (alpha > 1) alpha = 1;
+            
+            // If user wants distinct "Top Pink, Rest White", maybe less fade?
+            // "Top Pink" -> Y > 10 (Top Tier). 
+            // Let's use alpha to lerp
+            
+            const r = bottomColor.r + (topColor.r - bottomColor.r) * alpha;
+            const g = bottomColor.g + (topColor.g - bottomColor.g) * alpha;
+            const b = bottomColor.b + (topColor.b - bottomColor.b) * alpha;
+            
+            this.targetColors[idx] = r;
+            this.targetColors[idx + 1] = g;
+            this.targetColors[idx + 2] = b;
+        }
+    }
+
     update(delta, time) {
         // Lerp Scale
         this.scale += (this.targetScale - this.scale) * 5.0 * delta;
@@ -500,5 +534,31 @@ export class ParticleSystem {
         
         this.geometry.attributes.position.needsUpdate = true;
         this.geometry.attributes.color.needsUpdate = true;
+    }
+
+    animateToSegmentColors(baseColor, starColor) {
+        // Apply baseColor to leaves and trunk
+        // Apply starColor to star
+        
+        // Ensure we are in christmasTree mode for indices to make sense
+        // Fallback to simple fill if not
+        if (this.currentModel !== 'christmasTree') {
+             this.animateToColor(baseColor);
+             return;
+        }
+
+        const count = this.currentCount;
+        for (let i = 0; i < count; i++) {
+            let color = baseColor;
+            
+            // Check if Star
+            if (i >= this.starStartIndex) {
+                color = starColor;
+            }
+            
+            this.targetColors[i * 3] = color.r;
+            this.targetColors[i * 3 + 1] = color.g;
+            this.targetColors[i * 3 + 2] = color.b;
+        }
     }
 }
