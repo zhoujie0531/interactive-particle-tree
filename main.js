@@ -1467,7 +1467,8 @@ const initialColorKey = 'Natural (Happy)';
 
 // Create a proxy object for GUI to bind to
 const guiState = {
-    colorName: initialColorKey
+    colorName: initialColorKey,
+    showPalette: true
 };
 
 const treeColorCtrl = gui.add(guiState, 'colorName', Object.keys(colorOptions))
@@ -1489,13 +1490,31 @@ const treeColorCtrl = gui.add(guiState, 'colorName', Object.keys(colorOptions))
             // Top Star Blue, Rest White
             particleSystem.animateToSegmentColors(
                 new THREE.Color(0xFFFFFF), // Base (White)
-                new THREE.Color(0x7EC0EE)  // Star (Blue)
+                new THREE.Color(0x0000FF)  // Star (Blue)
             );
         } else {
             state.baseColor = val;
             particleSystem.setBaseColor(state.baseColor);
         }
+        
+        // Save State
+        saveState();
     });
+
+// Palette Visibility Control
+gui.add(guiState, 'showPalette').name('Decorations').onChange(visible => {
+    const palette = document.getElementById('palette-container');
+    if (palette) {
+        palette.style.display = visible ? 'flex' : 'none';
+        
+        // If hiding, cancel active selection
+        if (!visible && selectedDecorationType) {
+            selectedDecorationType = null;
+            state.autoRotate = true;
+            document.querySelectorAll('.palette-item').forEach(el => el.classList.remove('selected'));
+        }
+    }
+});
 
 // Auto Rotate Control
 gui.add(state, 'autoRotate').name('Auto Rotate');
